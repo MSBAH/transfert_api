@@ -27,10 +27,14 @@ services:
   maildev:
     image: maildev/maildev
     container_name: maildev_transfert_api
-    command: bin/maildev --web 80 --smpt 25 --hide-extensions STARTTLS
+    #command: bin/maildev --web 80 --smpt 25 --hide-extensions STARTTLS
     ports:
       - 9082:80
     restart: always
+    environment:
+      MAILDEV_WEB_PORT: 80
+      MAILDEV_SMTP_PORT: 25
+      MAILDEV_HIDE_EXTENSIONS: STARTTLS
     networks:
       - network_ransfert_api
 
