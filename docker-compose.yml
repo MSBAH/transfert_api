@@ -1,0 +1,71 @@
+version: '3'
+
+services:
+  db:
+    image: mysql
+    container_name: db_transfert_api
+    restart: always
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    networks:
+      - network_ransfert_api
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmni_transfert_api
+    depends_on:
+      - db
+    ports:
+      - 9081:80
+    environment:
+      PMA_HOST: db
+    networks:
+      - network_ransfert_api
+
+  maildev:
+    image: maildev/maildev
+    container_name: maildev_transfert_api
+    command: bin/maildev --web 80 --smpt 25 --hide-extensions STARTTLS
+    ports:
+      - 9082:80
+    restart: always
+    networks:
+      - network_ransfert_api
+
+  www:
+    build: docker
+    container_name: www_transfert_api
+    ports:
+      - "9080:80"
+    volumes:
+      - ./docker/vhosts:/etc/apache2/sites-enabled
+      - ./:/var/www
+    networks:
+      - network_ransfert_api
+
+###> doctrine/doctrine-bundle ###
+  database:
+    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      # You should definitely change the password in production
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
+      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/db/data:/var/lib/postgresql/data:rw
+###< doctrine/doctrine-bundle ###
+
+networks:
+  network_ransfert_api:
+
+volumes:
+  db-data:
+
+#chown -R $USER ./
+###> doctrine/doctrine-bundle ###
+  database_data:
+###< doctrine/doctrine-bundle ###
