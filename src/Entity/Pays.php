@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\PaysRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PaysRepository::class)]
@@ -23,6 +25,17 @@ class Pays
 
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $devisePays = null;
+
+    #[ORM\ManyToOne(inversedBy: 'pays')]
+    private ?Devise $devisePrincipal = null;
+
+    #[ORM\OneToMany(mappedBy: 'pays', targetEntity: Ville::class, orphanRemoval: true)]
+    private Collection $villes;
+
+    public function __construct()
+    {
+        $this->villes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -68,6 +81,48 @@ class Pays
     public function setDevisePays(?string $devisePays): static
     {
         $this->devisePays = $devisePays;
+
+        return $this;
+    }
+
+    public function getDevisePrincipal(): ?Devise
+    {
+        return $this->devisePrincipal;
+    }
+
+    public function setDevisePrincipal(?Devise $devisePrincipal): static
+    {
+        $this->devisePrincipal = $devisePrincipal;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Ville>
+     */
+    public function getVilles(): Collection
+    {
+        return $this->villes;
+    }
+
+    public function addVille(Ville $ville): static
+    {
+        if (!$this->villes->contains($ville)) {
+            $this->villes->add($ville);
+            $ville->setPays($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVille(Ville $ville): static
+    {
+        if ($this->villes->removeElement($ville)) {
+            // set the owning side to null (unless already changed)
+            if ($ville->getPays() === $this) {
+                $ville->setPays(null);
+            }
+        }
 
         return $this;
     }

@@ -50,6 +50,10 @@ class Destinataire
     #[ORM\OneToMany(mappedBy: 'destinataire', targetEntity: Transaction::class)]
     private Collection $transactions;
 
+    #[ORM\ManyToOne(inversedBy: 'destinataires')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Expediteur $expediteur = null;
+
     public function __construct()
     {
         $this->transactions = new ArrayCollection();
@@ -206,6 +210,18 @@ class Destinataire
                 $transaction->setDestinataire(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getExpediteur(): ?Expediteur
+    {
+        return $this->expediteur;
+    }
+
+    public function setExpediteur(?Expediteur $expediteur): static
+    {
+        $this->expediteur = $expediteur;
 
         return $this;
     }

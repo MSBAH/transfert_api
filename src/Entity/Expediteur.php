@@ -47,9 +47,13 @@ class Expediteur
     #[ORM\OneToMany(mappedBy: 'expediteur', targetEntity: Transaction::class)]
     private Collection $transactions;
 
+    #[ORM\OneToMany(mappedBy: 'expediteur', targetEntity: Destinataire::class, orphanRemoval: true)]
+    private Collection $destinataires;
+
     public function __construct()
     {
         $this->transactions = new ArrayCollection();
+        $this->destinataires = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -196,6 +200,36 @@ class Expediteur
             // set the owning side to null (unless already changed)
             if ($transaction->getExpediteur() === $this) {
                 $transaction->setExpediteur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Destinataire>
+     */
+    public function getDestinataires(): Collection
+    {
+        return $this->destinataires;
+    }
+
+    public function addDestinataire(Destinataire $destinataire): static
+    {
+        if (!$this->destinataires->contains($destinataire)) {
+            $this->destinataires->add($destinataire);
+            $destinataire->setExpediteur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDestinataire(Destinataire $destinataire): static
+    {
+        if ($this->destinataires->removeElement($destinataire)) {
+            // set the owning side to null (unless already changed)
+            if ($destinataire->getExpediteur() === $this) {
+                $destinataire->setExpediteur(null);
             }
         }
 

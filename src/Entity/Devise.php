@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\DeviseRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DeviseRepository::class)]
@@ -20,6 +22,14 @@ class Devise
 
     #[ORM\Column(length: 70, nullable: true)]
     private ?string $libelle = null;
+
+    #[ORM\OneToMany(mappedBy: 'devisePrincipal', targetEntity: Pays::class)]
+    private Collection $pays;
+
+    public function __construct()
+    {
+        $this->pays = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -53,6 +63,36 @@ class Devise
     public function setLibelle(?string $libelle): static
     {
         $this->libelle = $libelle;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Pays>
+     */
+    public function getPays(): Collection
+    {
+        return $this->pays;
+    }
+
+    public function addPay(Pays $pay): static
+    {
+        if (!$this->pays->contains($pay)) {
+            $this->pays->add($pay);
+            $pay->setDevisePrincipal($this);
+        }
+
+        return $this;
+    }
+
+    public function removePay(Pays $pay): static
+    {
+        if ($this->pays->removeElement($pay)) {
+            // set the owning side to null (unless already changed)
+            if ($pay->getDevisePrincipal() === $this) {
+                $pay->setDevisePrincipal(null);
+            }
+        }
 
         return $this;
     }

@@ -46,11 +46,18 @@ class Agence
     private ?string $ville = null;
 
     #[ORM\OneToMany(mappedBy: 'agence', targetEntity: User::class, orphanRemoval: true)]
-    private Collection $users;
+    private Collection $agents;
+
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'agences')]
+    private ?self $partenaierDe = null;
+
+    #[ORM\OneToMany(mappedBy: 'partenaierDe', targetEntity: self::class)]
+    private Collection $agences;
 
     public function __construct()
     {
-        $this->users = new ArrayCollection();
+        $this->agents = new ArrayCollection();
+        $this->agences = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -176,27 +183,69 @@ class Agence
     /**
      * @return Collection<int, User>
      */
-    public function getUsers(): Collection
+    public function getAgents(): Collection
     {
-        return $this->users;
+        return $this->agents;
     }
 
-    public function addUser(User $user): static
+    public function addAgent(User $agent): static
     {
-        if (!$this->users->contains($user)) {
-            $this->users->add($user);
-            $user->setAgence($this);
+        if (!$this->agents->contains($agent)) {
+            $this->agents->add($agent);
+            $agent->setAgence($this);
         }
 
         return $this;
     }
 
-    public function removeUser(User $user): static
+    public function removeUser(User $agent): static
     {
-        if ($this->users->removeElement($user)) {
+        if ($this->agents->removeElement($agent)) {
             // set the owning side to null (unless already changed)
-            if ($user->getAgence() === $this) {
-                $user->setAgence(null);
+            if ($agent->getAgence() === $this) {
+                $agent->setAgence(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getPartenaierDe(): ?self
+    {
+        return $this->partenaierDe;
+    }
+
+    public function setPartenaierDe(?self $partenaierDe): static
+    {
+        $this->partenaierDe = $partenaierDe;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getAgences(): Collection
+    {
+        return $this->agences;
+    }
+
+    public function addAgence(self $agence): static
+    {
+        if (!$this->agences->contains($agence)) {
+            $this->agences->add($agence);
+            $agence->setPartenaierDe($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAgence(self $agence): static
+    {
+        if ($this->agences->removeElement($agence)) {
+            // set the owning side to null (unless already changed)
+            if ($agence->getPartenaierDe() === $this) {
+                $agence->setPartenaierDe(null);
             }
         }
 
