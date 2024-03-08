@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240305220322 extends AbstractMigration
+final class Version20240308220059 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -39,15 +39,11 @@ final class Version20240305220322 extends AbstractMigration
         $this->addSql('ALTER TABLE transaction ADD CONSTRAINT FK_723705D1A4F84F6E FOREIGN KEY (destinataire_id) REFERENCES destinataire (id)');
         $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D649D725330D FOREIGN KEY (agence_id) REFERENCES agence (id)');
         $this->addSql('ALTER TABLE ville ADD CONSTRAINT FK_43C3D9C3A6E44244 FOREIGN KEY (pays_id) REFERENCES pays (id)');
-        $this->addSql('DROP TABLE test2');
-        $this->addSql('DROP TABLE tester');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE test2 (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB COMMENT = \'\' ');
-        $this->addSql('CREATE TABLE tester (id INT AUTO_INCREMENT NOT NULL, nom VARCHAR(255) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB COMMENT = \'\' ');
         $this->addSql('ALTER TABLE agence DROP FOREIGN KEY FK_64C19AA9228CE64B');
         $this->addSql('ALTER TABLE destinataire DROP FOREIGN KEY FK_FEA9FF9210335F61');
         $this->addSql('ALTER TABLE pays DROP FOREIGN KEY FK_349F3CAE715F0870');
